@@ -2144,7 +2144,11 @@ FMT_CONSTEXPR OutputIt write(OutputIt out, Char value) {
 template <typename Char, typename OutputIt>
 FMT_CONSTEXPR OutputIt write(OutputIt out, const Char* value) {
   if (!value) {
+#if 0
     FMT_THROW(format_error("string pointer is null"));
+#else
+    out = write(out, basic_string_view<Char>("(null)", /*length of "(null)"*/6));
+#endif
   } else {
     auto length = std::char_traits<Char>::length(value);
     out = write(out, basic_string_view<Char>(value, length));
@@ -2291,8 +2295,13 @@ class arg_formatter_base {
   void write(const Char* value) {
     if (value)
       write(basic_string_view<char_type>(value), specs_);
+#if 0
     else
       FMT_THROW(format_error("string pointer is null"));
+#else
+    else
+      write(basic_string_view<char_type>("(null)", /*length of "(null)"*/6), specs_);
+#endif
   }
 
  public:
