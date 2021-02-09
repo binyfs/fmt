@@ -2067,7 +2067,11 @@ OutputIt write(OutputIt out, Char value) {
 template <typename Char, typename OutputIt>
 OutputIt write(OutputIt out, const Char* value) {
   if (!value) {
+#if 0
     FMT_THROW(format_error("string pointer is null"));
+#else
+    out = write(out, basic_string_view<Char>("(null)", /*length of "(null)"*/6));
+#endif
   } else {
     auto length = std::char_traits<Char>::length(value);
     out = write(out, basic_string_view<Char>(value, length));
@@ -2226,7 +2230,12 @@ class arg_formatter_base {
 
   void write(const Char* value) {
     if (!value) {
+#if 0
       FMT_THROW(format_error("string pointer is null"));
+#else
+      basic_string_view<char_type> sv("(null)", /*length of "(null)"*/6);
+      specs_ ? write(sv, *specs_) : write(sv);
+#endif
     } else {
       auto length = std::char_traits<char_type>::length(value);
       basic_string_view<char_type> sv(value, length);
